@@ -1,0 +1,480 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+<html lang="bs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Flash kartice – Easy Learn</title>
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:#fff; --text:#0b1220; --muted:#4b5563;
+      --soft:#eef1ff; --soft2:#f2f4f8; --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --btn:#111827; --btnText:#fff; --btn2:#e5e7eb; --btn2Text:#111827;
+      --good:#16a34a; --bad:#dc2626; --ring: rgba(99,102,241,.35);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b1020; --card:#0f172a; --text:#e5e7eb; --muted:#a1a1aa;
+        --soft:#1f2a50; --soft2:#111a33; --shadow: 0 14px 38px rgba(0,0,0,.45);
+        --btn:#e5e7eb; --btnText:#0b1220; --btn2:#1f2937; --btn2Text:#e5e7eb;
+        --ring: rgba(99,102,241,.50);
+      }
+    }
+    html[data-theme="light"]{ /* manual override */
+      --bg:#f6f7fb; --card:#fff; --text:#0b1220; --muted:#4b5563;
+      --soft:#eef1ff; --soft2:#f2f4f8; --shadow: 0 10px 30px rgba(0,0,0,.10);
+      --btn:#111827; --btnText:#fff; --btn2:#e5e7eb; --btn2Text:#111827;
+      --good:#16a34a; --bad:#dc2626; --ring: rgba(99,102,241,.35);
+    }
+    html[data-theme="dark"]{
+      --bg:#0b1020; --card:#0f172a; --text:#e5e7eb; --muted:#a1a1aa;
+      --soft:#1f2a50; --soft2:#111a33; --shadow: 0 14px 38px rgba(0,0,0,.45);
+      --btn:#e5e7eb; --btnText:#0b1220; --btn2:#1f2937; --btn2Text:#e5e7eb;
+      --good:#16a34a; --bad:#dc2626; --ring: rgba(99,102,241,.50);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .wrap{ max-width: 860px; margin: 0 auto; padding: 14px 14px calc(18px + env(safe-area-inset-bottom)); }
+    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin: 6px 2px 12px; }
+    .pill{ background: var(--soft); padding: 8px 12px; border-radius: 999px; font-size: 12px; display:flex; gap:8px; align-items:center; }
+    .iconbtn{
+      border:0; background: var(--btn2); color: var(--btn2Text);
+      border-radius: 999px; padding: 10px 12px; font-weight: 900; cursor:pointer; min-width: 46px;
+    }
+
+    .card{
+      background: var(--card); border-radius: 22px; padding: 18px; box-shadow: var(--shadow);
+      min-height: 300px; display:flex; flex-direction: column; justify-content: space-between; outline: none;
+      border: 1px solid rgba(127,127,127,.12);
+    }
+    .card:focus{ box-shadow: var(--shadow), 0 0 0 4px var(--ring); }
+
+    .frontBox{ text-align:center; padding: 14px 10px 6px; user-select:none; }
+    .frontBig{ font-size: 26px; font-weight: 950; line-height: 1.15; }
+    .frontSub{ margin-top: 10px; font-size: 16px; color: var(--muted); font-weight: 800; }
+    .hint{ margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+    .answer{
+      margin-top: 14px; padding: 14px; border-radius: 16px; background: var(--soft2); display:none;
+    }
+    .answerRow{ display:flex; gap:10px; align-items:flex-start; justify-content:space-between; font-size: 15px; padding: 6px 0;
+      border-bottom: 1px solid rgba(127,127,127,.15);
+    }
+    .answerRow:last-child{ border-bottom:0; }
+    .label{ min-width: 112px; font-weight: 900; }
+    .val{ flex:1; text-align:left; }
+    .arabic{ font-size: 34px; direction: rtl; text-align:center; margin-top: 6px; letter-spacing: .3px; }
+
+    .controls{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top: 12px; }
+    button{
+      border:0; padding: 14px 14px; border-radius: 16px; font-weight: 950;
+      cursor:pointer; background: var(--btn); color: var(--btnText); font-size: 15px;
+    }
+    button.secondary{ background: var(--btn2); color: var(--btn2Text); }
+    .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-top: 10px; }
+    button.good{ background: var(--good); color:white; }
+    button.bad{ background: var(--bad); color:white; }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .stats{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top: 12px; }
+    .stat{ background: var(--card); border-radius: 16px; padding: 10px; border: 1px solid rgba(127,127,127,.12); }
+    .stat .n{ font-size: 18px; font-weight: 950; }
+    .stat .t{ font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .small{ margin-top: 10px; font-size: 12px; color: var(--muted); line-height: 1.35; }
+    .footer{ text-align:center; color: var(--muted); font-size: 12px; margin-top: 14px; }
+
+    .modeRow{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin: 10px 0 0; }
+    .modeBtn{ padding: 12px 10px; border-radius: 14px; font-size: 13px; }
+    .modeBtn.active{ outline: 3px solid var(--ring); }
+
+    @media (max-width: 520px){
+      .stats{ grid-template-columns: repeat(2, 1fr); }
+      .frontBig{ font-size: 24px; }
+      .arabic{ font-size: 32px; }
+      button{ padding: 15px 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="pill"><span id="counter">Kartica 1 / 1</span> • <span id="sessionInfo">Sesija: 20</span></div>
+    <div style="display:flex; gap:10px;">
+      <button class="iconbtn" id="themeBtn" title="Dark/Light/Auto">🌙</button>
+      <button class="iconbtn" id="shuffleBtn" title="Promiješaj">🔀</button>
+    </div>
+  </div>
+
+  <div class="card" id="card" tabindex="0">
+    <div>
+      <div class="frontBox">
+        <div class="frontBig" id="frontMain">--</div>
+        <div class="frontSub" id="frontSub">--</div>
+        <div class="hint" id="hint">Tapni karticu ili "Pokaži". Swipe lijevo/desno = sljedeća/prethodna.</div>
+      </div>
+
+      <div class="answer" id="answer">
+        <div class="answerRow"><div class="label">Prijevod:</div><div class="val" id="backBs">--</div></div>
+        <div class="answerRow"><div class="label">Transkripcija:</div><div class="val" id="backPr">--</div></div>
+        <div class="answerRow"><div class="label">Arapski:</div><div class="val"><div class="arabic" id="backAr">--</div></div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="modeRow">
+        <button class="secondary modeBtn" id="mEasy">Uči</button>
+        <button class="secondary modeBtn active" id="mPractice">Vježbaj</button>
+        <button class="secondary modeBtn" id="mHard">Hard</button>
+      </div>
+
+      <div class="controls">
+        <button class="secondary" id="showBtn">Pokaži odgovor</button>
+        <button class="secondary" id="nextBtn">Sljedeća ▶</button>
+      </div>
+
+      <div class="row3">
+        <button class="good" id="goodBtn" disabled>Tačno ✅</button>
+        <button class="bad" id="badBtn" disabled>Netačno ❌</button>
+        <button class="secondary" id="prevBtn">◀ Prethodna</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="n" id="sLeft">0</div><div class="t">U sesiji</div></div>
+        <div class="stat"><div class="n" id="sGood">0</div><div class="t">Tačno</div></div>
+        <div class="stat"><div class="n" id="sBad">0</div><div class="t">Netačno</div></div>
+        <div class="stat"><div class="n" id="sAgain">0</div><div class="t">Vraća se opet</div></div>
+      </div>
+
+      <div class="small">
+        Brzi "spaced repetition": <b>Tačno</b> ide kasnije, <b>Netačno</b> se vraća brzo.
+        Kad završiš sesiju, automatski pravi novu (opet samo ono što te muči).
+      </div>
+
+      <div class="small">
+        <button class="secondary" id="resetBtn" style="margin-top:10px; width:100%;">Resetuj učenje</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Najlakše: kreni sa "Uči" 10–15 min → onda "Vježbaj"</div>
+</div>
+
+<script>
+  const ALL = [
+    {ar:"موعد", pr:"maw-id", bs:"termin"},
+    {ar:"وقت", pr:"wakt", bs:"vrijeme"},
+    {ar:"الواحدة تماماً", pr:"el-wahida taman", bs:"tačno jedan sat"},
+    {ar:"إلّا ربعاً", pr:"illa rub'an", bs:"četvrt do"},
+    {ar:"إلّا ثلثاً", pr:"illa sulusan", bs:"dvadeset do"},
+    {ar:"والنصف", pr:"wen-nusf", bs:"i po"},
+    {ar:"موظف", pr:"muwaz-zaf", bs:"službenik / zaposlenik"},
+    {ar:"تذكرة سفر", pr:"tazkiret sefer", bs:"putna karta"},
+    {ar:"مكتب الطيران", pr:"mektab et-tajjaran", bs:"ured za letove"},
+    {ar:"نهاراً", pr:"naharan", bs:"danju"},
+    {ar:"ليلاً", pr:"lejlan", bs:"noću"},
+    {ar:"والربع", pr:"wer-rub'", bs:"i četvrt"},
+    {ar:"ساعة", pr:"sa'a", bs:"sat"},
+    {ar:"دقيقة", pr:"dakika", bs:"minuta"},
+    {ar:"ثانية", pr:"sanija", bs:"sekunda"},
+    {ar:"مطار", pr:"matar", bs:"aerodrom"},
+    {ar:"طائرة", pr:"ta'ira", bs:"avion"},
+    {ar:"قطار", pr:"kitar", bs:"voz"},
+    {ar:"حافلة", pr:"hafila", bs:"autobus"},
+    {ar:"والثلث", pr:"wes-sulus", bs:"i trećina (20 min)"},
+    {ar:"جديد", pr:"džedid", bs:"novo"},
+    {ar:"قديم", pr:"kadim", bs:"staro"},
+    {ar:"تذهب", pr:"tazhab", bs:"ideš"},
+    {ar:"ينام", pr:"jenam", bs:"spava"},
+    {ar:"يصل", pr:"jasil", bs:"stiže"},
+    {ar:"صباحاً", pr:"sabahan", bs:"ujutro"},
+    {ar:"مساءً", pr:"mesa'an", bs:"navečer"},
+    {ar:"التالي", pr:"et-tali", bs:"sljedeći"},
+    {ar:"السابق", pr:"es-sabik", bs:"prethodni"},
+    {ar:"قبل الظهر", pr:"kabl ez-zuhur", bs:"prije podne"},
+    {ar:"بعد الظهر", pr:"ba'd ez-zuhur", bs:"poslije podne"},
+    {ar:"متأخر", pr:"muta'ahhir", bs:"kasno"},
+    {ar:"مبكر", pr:"mubekkir", bs:"rano"},
+    {ar:"مكتب الصرافة", pr:"mektab es-sarafa", bs:"mjenjačnica"},
+    {ar:"سعر", pr:"si'r", bs:"cijena"},
+    {ar:"أسعار", pr:"as'ar", bs:"cijene"},
+    {ar:"دولار أمريكي", pr:"dolar amriki", bs:"američki dolar"},
+    {ar:"يورو", pr:"juru", bs:"euro"},
+    {ar:"جنيه إسترليني", pr:"džunejh istirlini", bs:"britanska funta"},
+    {ar:"جنيه مصري", pr:"džunejh misri", bs:"egipatska funta"},
+    {ar:"ين ياباني", pr:"jen jabani", bs:"japanski jen"},
+    {ar:"ريال سعودي", pr:"rijal sa'udi", bs:"saudijski rijal"},
+    {ar:"درهم إماراتي", pr:"dirham imarati", bs:"UAE dirham"},
+    {ar:"دينار كويتي", pr:"dinar kuwejti", bs:"kuvajtski dinar"},
+    {ar:"عملة", pr:"umla", bs:"valuta"},
+    {ar:"عملات", pr:"umalat", bs:"valute"},
+    {ar:"نقود", pr:"nukud", bs:"novac (keš)"},
+    {ar:"ليرة تركية", pr:"lira turkijje", bs:"turska lira"},
+    {ar:"فِكّة", pr:"fikke", bs:"sitno (kusur)"},
+    {ar:"خمسون قرشاً", pr:"hamsun iršan", bs:"50 kurša/piastara"},
+    {ar:"قرش", pr:"irš", bs:"kurš/piastar"},
+    {ar:"قروش", pr:"kuruš", bs:"kurši/piastari"},
+    {ar:"يتغير", pr:"jetgaj-jar", bs:"mijenja se"},
+    {ar:"يعد", pr:"ja-ud", bs:"broji"},
+    {ar:"بنك", pr:"bank", bs:"banka"},
+    {ar:"مصرف", pr:"masraf", bs:"banka"},
+    {ar:"البنك المركزي", pr:"el-bank el-markezi", bs:"centralna banka"},
+    {ar:"نصف جنيه", pr:"nusf džunejh", bs:"pola funte"},
+    {ar:"ربع جنيه", pr:"rub' džunejh", bs:"četvrt funte"},
+    {ar:"مواعيد الصلاة", pr:"mawa'id es-salah", bs:"vremena namaza"},
+    {ar:"الأذان", pr:"el-ezan", bs:"ezan"},
+    {ar:"الفجر", pr:"el-fedžr", bs:"sabah"},
+    {ar:"الشروق", pr:"eš-šuruk", bs:"izlazak sunca"},
+    {ar:"الظهر", pr:"ez-zuhur", bs:"podne (zuhr)"},
+    {ar:"العصر", pr:"el-asr", bs:"ikindija (asr)"},
+    {ar:"المغرب", pr:"el-magrib", bs:"akšam (magrib)"},
+    {ar:"العشاء", pr:"el-iša", bs:"jacija (iša)"},
+  ];
+
+  const el = id => document.getElementById(id);
+
+  // ---- theme ----
+  function getTheme(){ return localStorage.getItem("theme") || "auto"; }
+  function setTheme(t){
+    localStorage.setItem("theme", t);
+    if(t === "auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    el("themeBtn").textContent = (t === "dark") ? "☀️" : "🌙";
+  }
+  setTheme(getTheme());
+  el("themeBtn").addEventListener("click", () => {
+    const t = getTheme();
+    setTheme(t === "auto" ? "dark" : (t === "dark" ? "light" : "auto"));
+  });
+
+  // ---- learning engine (fast spaced repetition) ----
+  // Each card has a "bucket" (0..3). Wrong -> bucket 0, Right -> bucket++ (max 3).
+  // When building session: more from low buckets.
+  const KEY = "easyLearnProgress_v1";
+  let progress = loadProgress(); // { ar: bucket }
+  function loadProgress(){
+    try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; }
+  }
+  function saveProgress(){ localStorage.setItem(KEY, JSON.stringify(progress)); }
+
+  function bucketOf(c){ return progress[c.ar] ?? 0; }
+  function setBucket(c, b){ progress[c.ar] = Math.max(0, Math.min(3, b)); saveProgress(); }
+
+  function shuffle(arr){
+    for(let j=arr.length-1; j>0; j--){
+      const k = Math.floor(Math.random()*(j+1));
+      [arr[j], arr[k]] = [arr[k], arr[j]];
+    }
+  }
+
+  // Build a session of N cards, weighted toward low buckets
+  const SESSION_N = 20;
+  let session = [];
+  let idx = 0;
+  let show = false;
+  let againQueue = []; // wrong ones reappear quickly
+  let modeFront = "practice"; // easy | practice | hard
+
+  function buildSession(){
+    // Create weighted pool
+    const pool = [];
+    for(const c of ALL){
+      const b = bucketOf(c);
+      const w = (b === 0) ? 5 : (b === 1) ? 3 : (b === 2) ? 2 : 1;
+      for(let k=0; k<w; k++) pool.push(c);
+    }
+    shuffle(pool);
+
+    // pick unique cards until session_n
+    const chosen = [];
+    const seen = new Set();
+    for(const c of pool){
+      if(!seen.has(c.ar)){
+        chosen.push(c);
+        seen.add(c.ar);
+      }
+      if(chosen.length >= SESSION_N) break;
+    }
+    // if small, fill from ALL
+    if(chosen.length < SESSION_N){
+      const rest = ALL.filter(x => !seen.has(x.ar));
+      shuffle(rest);
+      while(chosen.length < SESSION_N && rest.length) chosen.push(rest.pop());
+    }
+
+    session = chosen;
+    idx = 0;
+    show = false;
+    againQueue = [];
+    render();
+  }
+
+  // ---- UI render ----
+  function card(){ return session[idx]; }
+
+  function setModeButtons(){
+    el("mEasy").classList.toggle("active", modeFront === "easy");
+    el("mPractice").classList.toggle("active", modeFront === "practice");
+    el("mHard").classList.toggle("active", modeFront === "hard");
+  }
+
+  function render(){
+    const c = card();
+    if(!c){ return; }
+
+    // Front display logic
+    if(modeFront === "easy"){
+      el("frontMain").textContent = c.bs;
+      el("frontSub").textContent = c.pr;     // show transcription to ease learning
+      el("hint").textContent = "Uči: vidiš prijevod + transkripciju. Tapni da vidiš arapski.";
+    } else if(modeFront === "practice"){
+      el("frontMain").textContent = c.bs;    // test yourself from bosnian
+      el("frontSub").textContent = "--";
+      el("hint").textContent = "Vježbaj: vidiš samo bosanski. Pokaži za transkripciju + arapski.";
+    } else { // hard
+      el("frontMain").textContent = c.pr;    // test transcription recall
+      el("frontSub").textContent = "--";
+      el("hint").textContent = "Hard: vidiš samo transkripciju. Pokaži za arapski + prijevod.";
+    }
+
+    el("answer").style.display = show ? "block" : "none";
+    el("backBs").textContent = c.bs;
+    el("backPr").textContent = c.pr;
+    el("backAr").textContent = c.ar;
+
+    el("goodBtn").disabled = !show;
+    el("badBtn").disabled = !show;
+
+    el("counter").textContent = `Kartica ${idx+1} / ${session.length}`;
+    el("sessionInfo").textContent = `Sesija: ${SESSION_N}`;
+
+    // stats
+    el("sLeft").textContent = (session.length - idx);
+    el("sAgain").textContent = againQueue.length;
+
+    // quick counts in this session
+    el("sBad").textContent = sessionBad;
+    el("sGood").textContent = sessionGood;
+
+    setModeButtons();
+  }
+
+  // ---- actions ----
+  function toggleShow(){ show = !show; render(); }
+
+  // session score
+  let sessionGood = 0;
+  let sessionBad = 0;
+
+  function markGood(){
+    const c = card();
+    setBucket(c, bucketOf(c) + 1); // promote
+    sessionGood++;
+    next();
+  }
+  function markBad(){
+    const c = card();
+    setBucket(c, 0);               // reset
+    sessionBad++;
+    // put back soon (quick repeat)
+    againQueue.push(c);
+    next();
+  }
+
+  function next(){
+    show = false;
+
+    // if at end of session, recycle wrong ones first
+    if(idx >= session.length - 1){
+      if(againQueue.length){
+        // New mini-session = wrong cards (unique)
+        const uniq = [];
+        const seen = new Set();
+        for(const c of againQueue){
+          if(!seen.has(c.ar)){ uniq.push(c); seen.add(c.ar); }
+        }
+        againQueue = [];
+        session = uniq;
+        idx = 0;
+        render();
+        return;
+      }
+      // Build new fresh session
+      sessionGood = 0; sessionBad = 0;
+      buildSession();
+      return;
+    }
+
+    idx++;
+    render();
+  }
+
+  function prev(){
+    show = false;
+    idx = (idx - 1 + session.length) % session.length;
+    render();
+  }
+
+  // ---- buttons ----
+  el("showBtn").addEventListener("click", toggleShow);
+  el("nextBtn").addEventListener("click", next);
+  el("prevBtn").addEventListener("click", prev);
+  el("goodBtn").addEventListener("click", markGood);
+  el("badBtn").addEventListener("click", markBad);
+  el("shuffleBtn").addEventListener("click", () => { shuffle(session); idx=0; show=false; render(); });
+
+  el("mEasy").addEventListener("click", () => { modeFront="easy"; render(); });
+  el("mPractice").addEventListener("click", () => { modeFront="practice"; render(); });
+  el("mHard").addEventListener("click", () => { modeFront="hard"; render(); });
+
+  el("resetBtn").addEventListener("click", () => {
+    if(confirm("Resetovati napredak (sve od nule)?")){
+      localStorage.removeItem(KEY);
+      progress = {};
+      sessionGood = 0; sessionBad = 0;
+      buildSession();
+    }
+  });
+
+  // Tap card to show/hide (but not on buttons)
+  el("card").addEventListener("click", (e) => {
+    if(e.target.closest("button")) return;
+    toggleShow();
+  });
+
+  // Swipe
+  let startX=null, startY=null, startT=0;
+  const swipeMin=55, swipeMaxY=60;
+  el("card").addEventListener("touchstart", (e) => {
+    const t = e.changedTouches[0];
+    startX=t.clientX; startY=t.clientY; startT=Date.now();
+  }, {passive:true});
+  el("card").addEventListener("touchend", (e) => {
+    if(startX===null) return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-startX, dy=t.clientY-startY, dt=Date.now()-startT;
+    startX=null; startY=null;
+    if(Math.abs(dx)>=swipeMin && Math.abs(dy)<=swipeMaxY && dt<=600){
+      if(dx<0) next(); else prev();
+    }
+  }, {passive:true});
+
+  // Keys
+  window.addEventListener("keydown", (e) => {
+    if(e.code==="Space"){ e.preventDefault(); toggleShow(); }
+    if(e.code==="Enter"){ e.preventDefault(); next(); }
+    if(e.key==="ArrowRight"){ next(); }
+    if(e.key==="ArrowLeft"){ prev(); }
+    if(e.key==="1" && !el("goodBtn").disabled){ markGood(); }
+    if(e.key==="2" && !el("badBtn").disabled){ markBad(); }
+  });
+
+  // init
+  buildSession();
+</script>
+</body>
+</html>
